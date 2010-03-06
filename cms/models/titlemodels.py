@@ -21,6 +21,7 @@ class Title(Publisher):
     page_title = models.CharField(_("title"), max_length=255, blank=True, null=True, help_text=_("overwrite the title (html title tag)"))
     page = models.ForeignKey(Page, verbose_name=_("page"), related_name="title_set")
     creation_date = models.DateTimeField(_("creation date"), editable=False, default=datetime.now)
+    external_url = models.CharField(_("external url"), max_length=255, blank=True, null=True, help_text=_("overwrite the path with an external url"))
     
     objects = TitleManager()
     
@@ -80,6 +81,7 @@ class EmptyTitle(object):
     application_urls = ""
     menu_title = ""
     page_title = ""
+    external_url = ""
     
     @property
     def overwrite_url(self):

@@ -59,9 +59,9 @@ class PageAdmin(admin.ModelAdmin):
     exclude = ['created_by', 'changed_by', 'lft', 'rght', 'tree_id', 'level']
     mandatory_placeholders = ('title', 'slug', 'parent', 'site', 'meta_description', 'meta_keywords', 'page_title', 'menu_title')
     top_fields = []
-    general_fields = ['title', 'slug', ('published', 'in_navigation')]
+    general_fields = ['title', 'slug', ('published', 'in_navigation', 'disabled')]
     add_general_fields = ['title', 'slug', 'language', 'template']
-    advanced_fields = ['reverse_id',  'overwrite_url', 'redirect', 'login_required', 'menu_login_required']
+    advanced_fields = ['reverse_id',  'overwrite_url', 'redirect', 'login_required', 'menu_login_required', 'external_url']
     template_fields = ['template']
     change_list_template = "admin/cms/page/change_list.html"
     hidden_fields = ['site', 'parent']
@@ -293,6 +293,7 @@ class PageAdmin(admin.ModelAdmin):
             meta_keywords=form.cleaned_data.get('meta_keywords', None),
             page_title=form.cleaned_data.get('page_title', None),
             menu_title=form.cleaned_data.get('menu_title', None),
+            external_url=form.cleaned_data.get('external_url', None),
         )
         
         # is there any moderation message? save/update state
@@ -382,7 +383,8 @@ class PageAdmin(admin.ModelAdmin):
                          'meta_description',
                          'meta_keywords', 
                          'menu_title', 
-                         'page_title']:
+                         'page_title',
+                         'external_url']:
                 form.base_fields[name].initial = getattr(title_obj, name)
             if title_obj.overwrite_url:
                 form.base_fields['overwrite_url'].initial = title_obj.path

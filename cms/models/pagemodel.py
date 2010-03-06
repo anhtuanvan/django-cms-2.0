@@ -47,6 +47,7 @@ class Page(MpttPublisher):
     reverse_id = models.CharField(_("id"), max_length=40, db_index=True, blank=True, null=True, help_text=_("An unique identifier that is used with the page_url templatetag for linking to this page"))
     navigation_extenders = models.CharField(_("navigation extenders"), max_length=80, db_index=True, blank=True, null=True, choices=settings.CMS_NAVIGATION_EXTENDERS)
     published = models.BooleanField(_("is published"), blank=True)
+    disabled = models.BooleanField(_("disabled"), blank=True)
     
     template = models.CharField(_("template"), max_length=100, choices=settings.CMS_TEMPLATES, help_text=_('The template used to render the content.'))
     site = models.ForeignKey(Site, help_text=_('The site the page is accessible at.'), verbose_name=_("site"))
@@ -331,6 +332,9 @@ class Page(MpttPublisher):
                 return reverse('pages-root')
         except NoHomeFound:
             pass
+        url = self.get_external_url(language, fallback)
+        if url:
+                return url
         if settings.CMS_FLAT_URLS:
             path = self.get_slug(language, fallback)
         else:
@@ -381,7 +385,17 @@ class Page(MpttPublisher):
         get the path of the page depending on the given language
         """
         return self.get_title_obj_attribute("path", language, fallback, version_id, force_reload)
-
+    
+    def get_external_url(self, language=None, fallback=True, version_id=None, force_reload=False):
+        """
+        get the external url of the page depending on the given language
+        """
+        url = self.get_title_obj_attribute("external_url", language, fallback, version_id, force_reload)
+        if url:
+            return url.strip()
+        else:
+            return None
+    
     def get_slug(self, language=None, fallback=True, version_id=None, force_reload=False):
         """
         get the slug of the page depending on the given language
